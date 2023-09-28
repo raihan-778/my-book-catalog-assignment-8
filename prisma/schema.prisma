@@ -1,0 +1,250 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  password   String
+  role       UserRole
+  contactNo  String
+  addressNo  String
+  profileImg String
+
+  @@map("users")
+}
+
+model Category {
+  id    String @id @default(uuid())
+  title String
+  books Book[]
+
+  @@map("categories")
+}
+
+model Book {
+  id              String   @id @default(uuid())
+  title           String
+  author          String
+  price           Float
+  genre           String
+  publicationDate String
+  categoryId      String
+  category        Category @relation(fields: [categoryId], references: [id])
+
+  @@map("books")
+}
+
+// model Student {
+//   id           String   @id @default(uuid())
+//   studentId    String
+//   firstName    String
+//   middleName   String
+//   lastName     String
+//   porfileImage String
+//   email        String
+//   contactNo    String
+//   gender       String
+//   bloodGroup   String
+//   createdAt    DateTime @default(now())
+//   updatedAt    DateTime @updatedAt
+
+//   academicSemester   AcademicSemester @relation(fields: [academicSemesterId], references: [id])
+//   academicSemesterId String
+
+//   academicFaculty   AcademicFaculty @relation(fields: [academicFacultyId], references: [id])
+//   academicFacultyId String
+
+//   academicDepartment           AcademicDepartment            @relation(fields: [academicDepartmentId], references: [id])
+//   academicDepartmentId         String
+//   studentsSemesterRegistration StudentSemesterRegistration[]
+
+//   @@map("student")
+// }
+
+// model Faculty {
+//   id           String   @id @default(uuid())
+//   facultyId    String
+//   firstName    String
+//   middleName   String
+//   lastName     String
+//   porfileImage String
+//   email        String
+//   contactNo    String
+//   gender       String
+//   bloodGroup   String
+//   designation  String
+//   createdAt    DateTime @default(now())
+//   updatedAt    DateTime @updatedAt
+
+//   academicDepartment   AcademicDepartment @relation(fields: [academicDepartmentId], references: [id])
+//   academicDepartmentId String
+
+//   academicFaculty             AcademicFaculty              @relation(fields: [academicFacultyId], references: [id])
+//   academicFacultyId           String
+//   faculties                   CourseFaculty[]
+//   offeredCourseClassSchedules OfferedCourseClassSchedule[]
+
+//   @@map("faculties")
+// }
+
+// model Building {
+//   id        String   @id @default(uuid())
+//   title     String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   rooms     Room[]
+
+//   @@map("buildings")
+// }
+
+// model Course {
+//   id              String                 @id @default(uuid())
+//   title           String
+//   code            String
+//   credits         Int                    @default(0)
+//   createdAt       DateTime               @default(now())
+//   updatedAt       DateTime               @updatedAt
+//   prerequisits    CourseToPrerequisits[] @relation("coursesToPrerequisits") //here we seperate two relations using two different name using @relation 
+//   prerequisitsFor CourseToPrerequisits[] @relation("prerequisitesForCourse")
+//   courses         CourseFaculty[]
+//   offeredCourses  OfferedCourse[]
+
+//   @@map("courses")
+// }
+
+// model CourseToPrerequisits {
+//   courseId        String
+//   prerequisitesId String
+
+//   course        Course @relation(fields: [courseId], references: [id], name: "coursesToPrerequisits") //name is used for seperate two Course relation with course & prerequisits
+//   prerequisites Course @relation(fields: [prerequisitesId], references: [id], name: "prerequisitesForCourse")
+
+//   @@id([courseId, prerequisitesId])
+//   @@map("coursesToPrerequisits")
+// }
+
+// model CourseFaculty {
+//   courseId  String
+//   course    Course  @relation(fields: [courseId], references: [id])
+//   facultyId String
+//   faculty   Faculty @relation(fields: [facultyId], references: [id])
+
+//   @@id([courseId, facultyId])
+// }
+
+// model SemesterRegistration {
+//   id                           String                        @id @default(uuid())
+//   startDate                    DateTime
+//   endDate                      DateTime
+//   status                       SemesterRegistrationStatus    @default(UpComing)
+//   minCredit                    Int
+//   maxCredit                    Int
+//   createdAt                    DateTime                      @default(now())
+//   updatedAt                    DateTime                      @updatedAt
+//   academicSemesterId           String
+//   academicSemester             AcademicSemester              @relation(fields: [academicSemesterId], references: [id])
+//   offeredCourses               OfferedCourse[]
+//   offeredCourseSection         OfferedCourseSection[]
+//   offeredCourseClassSchedules  OfferedCourseClassSchedule[]
+//   studentsSemesterRegistration StudentSemesterRegistration[]
+
+//   @@map("semester_registrations")
+// }
+
+// model OfferedCourse {
+//   id                     String                 @id @default(uuid())
+//   createdAt              DateTime               @default(now())
+//   updatedAt              DateTime               @updatedAt
+//   courseId               String
+//   course                 Course                 @relation(fields: [courseId], references: [id])
+//   academicDepartmentId   String
+//   academicDepartment     AcademicDepartment     @relation(fields: [academicDepartmentId], references: [id])
+//   semesterRegistrationId String
+//   semesterRegistration   SemesterRegistration   @relation(fields: [semesterRegistrationId], references: [id])
+//   offeredCourseSection   OfferedCourseSection[]
+
+//   @@map("offered_courses")
+// }
+
+// model OfferedCourseSection {
+//   id                          String                       @id @default(uuid())
+//   title                       String
+//   maxCapacity                 Int
+//   currentlyEnrolledStudent    Int                          @default(0)
+//   createdAt                   DateTime                     @default(now())
+//   updatedAt                   DateTime                     @updatedAt
+//   offeredCourseId             String
+//   offeredCourse               OfferedCourse                @relation(fields: [offeredCourseId], references: [id])
+//   semesterRegistrationId      String
+//   semesterRegistration        SemesterRegistration         @relation(fields: [semesterRegistrationId], references: [id])
+//   offeredCourseClassSchedules OfferedCourseClassSchedule[]
+
+//   @@map("offered_course_sections")
+// }
+
+// model OfferedCourseClassSchedule {
+//   id                     String               @id @default(uuid())
+//   startTime              String
+//   endTime                String
+//   dayOfWeek              WeekDays             @default(SATURDAY)
+//   createdAt              DateTime             @default(now())
+//   updatedAt              DateTime             @updatedAt
+//   offeredCourseSectionId String
+//   offeredCourseSection   OfferedCourseSection @relation(fields: [offeredCourseSectionId], references: [id])
+//   semesterRegistrationId String
+//   semesterRegistration   SemesterRegistration @relation(fields: [semesterRegistrationId], references: [id])
+
+//   facultyId String
+//   faculty   Faculty @relation(fields: [facultyId], references: [id])
+
+//   roomId String
+//   room   Room   @relation(fields: [roomId], references: [id])
+
+//   @@map("offered_course_class_schedule")
+// }
+
+// model StudentSemesterRegistration {
+//   id                String   @id @default(uuid())
+//   isConfirmed       Boolean? @default(false)
+//   totalCreditsTaken Int      @default(0)
+//   createdAt         DateTime @default(now())
+//   updatedAt         DateTime @updatedAt
+//   studentId         String
+//   student           Student  @relation(fields: [studentId], references: [id])
+
+//   semesterRegistrationId String
+//   semesterRegistration   SemesterRegistration @relation(fields: [semesterRegistrationId], references: [id])
+
+//   @@map("student_semester_registrations")
+// }
+
+enum UserRole {
+  admin
+  customer
+}
+
+// enum WeekDays {
+//   SUNDAY
+//   MONDAY
+//   TUESDAY
+//   WEDNESDAY
+//   THURSDAY
+//   FRIDAY
+//   SATURDAY
+// }
+
+// enum SemesterRegistrationStatus {
+//   UpComing
+//   OnGoning
+//   Ended
+// }
