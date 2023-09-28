@@ -11,14 +11,16 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  name       String
-  email      String   @unique
-  password   String
-  role       UserRole
-  contactNo  String
-  addressNo  String
-  profileImg String
+  id               String            @id @default(uuid())
+  name             String
+  email            String            @unique
+  password         String
+  role             UserRole
+  contactNo        String
+  address          String
+  profileImg       String
+  reviewAndRatings ReviewAndRating[]
+  Order            Order[]
 
   @@map("users")
 }
@@ -32,19 +34,57 @@ model Category {
 }
 
 model Book {
-  id              String   @id @default(uuid())
-  title           String
-  author          String
-  price           Float
-  genre           String
-  publicationDate String
-  categoryId      String
-  category        Category @relation(fields: [categoryId], references: [id])
+  id               String            @id @default(uuid())
+  title            String
+  author           String
+  price            Float
+  genre            String
+  publicationDate  String
+  categoryId       String
+  category         Category          @relation(fields: [categoryId], references: [id])
+  reviewAndRatings ReviewAndRating[]
 
   @@map("books")
+}
+
+model ReviewAndRating {
+  id     String @id @default(uuid())
+  review String
+  rating String
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  bookId String
+  book   Book   @relation(fields: [bookId], references: [id])
+
+  @@map("reviewAndRatings")
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  status       Status        @default(pending)
+  createdAt    DateTime      @default(now())
+  orderedBooks OrderedBook[]
+
+  @@map("orders")
+}
+
+model OrderedBook {
+  id      String @id @default(uuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+  bookId  String
 }
 
 enum UserRole {
   admin
   customer
+}
+
+enum Status {
+  pending
+  shipped
 }

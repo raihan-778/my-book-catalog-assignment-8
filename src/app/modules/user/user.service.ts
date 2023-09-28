@@ -70,14 +70,14 @@ const getAllFromDB = async (
   };
 };
 
-// const getDataById = async (id: string): Promise<Student | null> => {
-//   const result = await prisma.student.findUnique({
-//     where: {
-//       id,
-//     },
-//   });
-//   return result;
-// };
+const getDataById = async (id: string): Promise<User | null> => {
+  const result = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return result;
+};
 // const updateIntoDB = async (
 //   id: string,
 //   payload: Partial<Student>
@@ -110,10 +110,10 @@ const getAllFromDB = async (
 //   return result;
 // };
 
-export const StudentService = {
+export const UserService = {
   insertIntoDB,
   getAllFromDB,
-  // getDataById,
+  getDataById,
   // updateIntoDB,
   // deleteDataById,
 };
