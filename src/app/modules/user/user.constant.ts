@@ -1,18 +1,9 @@
-export const userRole = ['buyer', 'seller', 'admin']
-export const userSearchableFields = [
-  'role',
-  'name',
-  'phoneNumber',
-  'address',
-  'budget',
-  'income',
-]
+export const userRole = ['customer', 'admin'];
+export const userSearchableFields = ['role', 'name', 'contactNo', 'email'];
 export const userFilterableFields = [
   'searchTerm',
   'role',
   'name',
-  'phoneNumber',
-  'address',
-  'budget',
-  'income',
-]
+  'contactNo',
+  'email',
+];

@@ -1,110 +1,119 @@
-import { SortOrder } from 'mongoose'
+import { Prisma, User } from '@prisma/client';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
+import { IGenericResponse } from '../../../interfaces/common';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import prisma from '../../../shared/prisma';
+import { userSearchableFields } from './user.constant';
+import { IUserFilterRequest } from './user.interface';
 
-import { paginationHelper } from '../../../helpers/paginationHelpers'
-import { IGenericResponse } from '../../../interfaces/common'
-import { IPaginationOptions } from '../../../interfaces/pagination'
-import { userSearchableFields } from './user.constant'
-import { IUser, IUserFilters } from './user.interface'
-import { User } from './user.model'
+const insertIntoDB = async (userData: User): Promise<User> => {
+  const result = await prisma.user.create({
+    data: userData,
+  });
+  return result;
+};
 
-// const createUser = async (user: IUser): Promise<IUser | null> => {
-//   if (!user.password) {
-//     user.password = config.default_user_pass as string
-//   }
-//   const result = await User.create(user)
-//   return result
-// }
+const getAllFromDB = async (
+  filters: IUserFilterRequest,
+  options: IPaginationOptions
+): Promise<IGenericResponse<User[]>> => {
+  const { searchTerm, ...filterData } = filters;
+  const { page, limit, skip } = paginationHelpers.calculatePagination(options);
+  console.log(filters);
+  const andConditions = [];
+  console.log(options);
 
-const getAllUsers = async (
-  filters: IUserFilters,
-  paginationOptions: IPaginationOptions
-): Promise<IGenericResponse<IUser[]>> => {
-  const { page, limit, skip, sortBy, sortOrder } =
-    paginationHelper.calculatePagination(paginationOptions)
-
-  /* code for searching by field start */
-
-  const { searchTerm, ...filteredData } = filters
-
-  const andConditions = []
   if (searchTerm) {
     andConditions.push({
-      //dynamic search tearm
-      $or: userSearchableFields.map(field => ({
-        [field]: { $regex: searchTerm, $options: 'i' },
+      OR: userSearchableFields.map(field => ({
+        [field]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
       })),
-    })
+    });
   }
-  // console.log(Object.entries(filteredData));
-  //here object.entries will get all properties with values as key value pairs.on the other hand object.keys will get only properties
-
-  if (Object.keys(filteredData).length) {
+  if (Object.keys(filterData).length > 0) {
     andConditions.push({
-      $and: Object.entries(filteredData).map(([field, value]) => ({
-        [field]: value,
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
       })),
-    })
+    });
   }
-
-  const sortCondition: { [key: string]: SortOrder } = {} // here [key:string]:string is a mapped type where we have defined an object property & its value type.here here key is the property.mongoose has a default sort order type so that in sort condition we can difined the value type as sortorder type imported from mongoose insted of type string.
-
-  if (sortBy && sortOrder) {
-    sortCondition[sortBy] = sortOrder
-  }
-  const whereCondition = andConditions.length > 0 ? { $and: andConditions } : {} // this code block is used to create conditions if any searching options is not found then an empty object will be added in query paramas.
-  const result = await User.find(whereCondition)
-    .sort(sortCondition)
-    .skip(skip)
-    .limit(limit)
-
-  const total = await User.countDocuments()
+  const whereConditions: Prisma.UserWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+  const result = await prisma.user.findMany({
+    where: whereConditions,
+    // where: andConditions,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            name: 'desc',
+          },
+  });
+  const total = await prisma.user.count();
 
   return {
     meta: {
+      total,
       page,
       limit,
-      total,
     },
     data: result,
-  }
-}
+  };
+};
 
-const getSingleUser = async (id: string): Promise<IUser | null> => {
-  const result = await User.findById(id)
-  return result
-}
+// const getDataById = async (id: string): Promise<Student | null> => {
+//   const result = await prisma.student.findUnique({
+//     where: {
+//       id,
+//     },
+//   });
+//   return result;
+// };
+// const updateIntoDB = async (
+//   id: string,
+//   payload: Partial<Student>
+// ): Promise<Student> => {
+//   const result = await prisma.student.update({
+//     where: {
+//       id,
+//     },
+//     data: payload,
+//     include: {
+//       academicSemester: true,
+//       academicFaculty: true,
+//       academicDepartment: true,
+//     },
+//   });
+//   return result;
+// };
 
-const getUserProfile = async (id: string) => {
-  const result = await User.findById(id)
-  return result
-}
-const updateUserProfile = async (id: string, payload: Partial<IUser>) => {
-  const result = await User.findByIdAndUpdate({ _id: id }, payload, {
-    new: true,
-  })
-  return result
-}
+// const deleteDataById = async (id: string): Promise<Student> => {
+//   const result = await prisma.student.delete({
+//     where: {
+//       id,
+//     },
+//     include: {
+//       academicSemester: true,
+//       academicFaculty: true,
+//       academicDepartment: true,
+//     },
+//   });
+//   return result;
+// };
 
-const updateUser = async (
-  id: string,
-  payload: Partial<IUser>
-): Promise<IUser | null> => {
-  const result = await User.findOneAndUpdate({ _id: id }, payload, {
-    new: true,
-  })
-  return result
-}
-
-const deleteUser = async (id: string): Promise<IUser | null> => {
-  const result = await User.findByIdAndDelete(id)
-  return result
-}
-
-export const UserService = {
-  getAllUsers,
-  getSingleUser,
-  updateUser,
-  deleteUser,
-  getUserProfile,
-  updateUserProfile,
-}
+export const StudentService = {
+  insertIntoDB,
+  getAllFromDB,
+  // getDataById,
+  // updateIntoDB,
+  // deleteDataById,
+};
