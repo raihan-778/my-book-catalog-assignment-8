@@ -6,13 +6,6 @@ import prisma from '../../../shared/prisma';
 import { userSearchableFields } from './user.constant';
 import { IUserFilterRequest } from './user.interface';
 
-const insertIntoDB = async (userData: User): Promise<User> => {
-  const result = await prisma.user.create({
-    data: userData,
-  });
-  return result;
-};
-
 const getAllFromDB = async (
   filters: IUserFilterRequest,
   options: IPaginationOptions
@@ -111,7 +104,6 @@ const getDataById = async (id: string): Promise<User | null> => {
 // };
 
 export const UserService = {
-  insertIntoDB,
   getAllFromDB,
   getDataById,
   // updateIntoDB,

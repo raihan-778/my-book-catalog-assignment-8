@@ -1,4 +1,5 @@
-import { WeekDays } from '@prisma/client';
+import { User } from '@prisma/client';
+import prisma from './prisma';
 
 export const asyncForEach = async (array: any[], callback: any) => {
   if (!Array.isArray(array)) {
@@ -9,27 +10,28 @@ export const asyncForEach = async (array: any[], callback: any) => {
   }
 };
 
-export const hasTimeConflict = (
-  existingSlot: {
-    startTime: string;
-    endTime: string;
-    dayOfWeek: WeekDays;
-  }[],
-  newSlot: {
-    startTime: string;
-    endTime: string;
-    dayOfWeek: WeekDays;
-  }
-) => {
-  for (const slot of existingSlot) {
-    const existingStart = new Date(`2023-09-01 ${slot.startTime}:00`);
-    const existingEnd = new Date(`2023-09-01 ${slot.endTime}:00`);
-    const newStart = new Date(`2023-09-01 ${newSlot.startTime}:00`);
-    const newEnd = new Date(`2023-09-01 ${newSlot.endTime}:00`);
-    console.log(existingStart);
-    if (newStart < existingEnd && newEnd > existingStart) {
-      return true;
-    }
-  }
-  return false;
+export const isUserExists = async (
+  email: string
+): Promise<Partial<User> | null> => {
+  const user = await prisma.user.findFirst({
+    where: {
+      email,
+    },
+    select: {
+      email: true,
+      password: true,
+      role: true,
+    },
+  });
+
+  return user;
+};
+
+// Prisma equivalent for isPasswordMatched instance method
+export const isPasswordMatched = async (
+  givenPassword: string,
+  currentPassword: string
+): Promise<boolean> => {
+  // return await bcrypt.compare(givenPassword, currentPassword);
+  return givenPassword === currentPassword;
 };

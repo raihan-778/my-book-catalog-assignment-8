@@ -3,7 +3,7 @@ import { UserController } from './user.controller';
 
 const router = Router();
 
-router.post('/', UserController.insertIntoDB);
+// router.post('/', UserController.insertIntoDB);
 router.get('/', UserController.getAllFromDB);
 router.get('/:id', UserController.getDataById);
 // router.patch(

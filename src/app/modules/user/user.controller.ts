@@ -8,16 +8,6 @@ import sendResponse from '../../../shared/sendResponse';
 import { userFilterableFields } from './user.constant';
 import { UserService } from './user.service';
 
-const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
-  const result = await UserService.insertIntoDB(req.body);
-  sendResponse<User>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'User Created Successfully!!',
-    data: result,
-  });
-});
-
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, userFilterableFields);
   const options = pick(req.query, paginationFields);
@@ -44,7 +34,6 @@ const getDataById = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const UserController = {
-  insertIntoDB,
   getAllFromDB,
   getDataById,
 };

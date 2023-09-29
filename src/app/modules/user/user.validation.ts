@@ -1,5 +1,5 @@
-import { z } from 'zod'
-import { userRole } from './user.constant'
+import { z } from 'zod';
+import { userRole } from './user.constant';
 
 //req-validation
 //body--> object
@@ -22,20 +22,14 @@ const createUserZodSchema = z.object({
         })
         .optional(),
     }),
-    phoneNumber: z.string({
-      required_error: 'phoneNumber is required',
+    contactNo: z.string({
+      required_error: 'Contact No is required',
     }),
     address: z.string({
       required_error: 'address is required',
     }),
-    budget: z.number({
-      required_error: 'budget is required',
-    }),
-    income: z.number({
-      required_error: 'income is required',
-    }),
   }),
-})
+});
 
 const updateUserZodSchema = z.object({
   body: z.object({
@@ -84,8 +78,8 @@ const updateUserZodSchema = z.object({
       })
       .optional(),
   }),
-})
+});
 export const UserValidation = {
   createUserZodSchema,
   updateUserZodSchema,
-}
+};

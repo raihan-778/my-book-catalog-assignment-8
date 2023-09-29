@@ -1,65 +1,68 @@
+import { User } from '@prisma/client';
 import httpStatus from 'http-status';
 import { Secret } from 'jsonwebtoken';
 import config from '../../../config';
 import ApiError from '../../../errors/ApiError';
 import { jwtHelpers } from '../../../helpers/jwtHelpers';
-import { IUser } from '../user/user.interface';
-import { User } from '../user/user.model';
-import {
-  IAuth,
-  ILoginUserResponse,
-  IRefreshTokenResponse,
-} from './auth.interface';
+import prisma from '../../../shared/prisma';
+import { isPasswordMatched, isUserExists } from '../../../shared/utils';
+import { ILoginUserResponse, IRefreshTokenResponse } from './auth.interface';
 //function for signup user
-const signupUser = async (user: IUser): Promise<IUser | null> => {
-  if (!user.password) {
-    user.password = config.default_user_pass as string;
+const signupUser = async (userData: User): Promise<User> => {
+  if (!userData.password) {
+    userData.password = config.default_user_pass as string;
   }
-  const result = await User.create(user);
+  const result = await prisma.user.create({
+    data: userData,
+  });
   return result;
 };
+
 /* functino for login User start */
-const loginUser = async (payload: IAuth): Promise<ILoginUserResponse> => {
-  const { contactNo, password } = payload;
 
-  const user = new User();
+// Login function using Prisma and PostgreSQL
+export const loginUser = async (
+  payload: Partial<User>
+): Promise<ILoginUserResponse> => {
+  const { email, password } = payload;
 
-  const isUserExist = await user.isUserExists(contactNo, password);
-  console.log(password, isUserExist?.password);
+  // Check if the user exists by email
+  const isUserExist = await isUserExists(email as string);
+  console.log('user', isUserExist);
+
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
   }
-  if (
-    isUserExist.password &&
-    !user.isPasswordMatched(password, isUserExist.password)
-  ) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'password mismatch');
+
+  // Check if the provided password matches the hashed password in the database
+  const isPasswordMatch = await isPasswordMatched(
+    password as string,
+    isUserExist.password as string
+  );
+  console.log(isPasswordMatch);
+
+  if (!isPasswordMatch) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Password mismatch');
   }
   //create accessToken & refreshToken
 
-  const {
-    phoneNumber: userPhoneNumber,
-    role,
-    needPasswordChange,
-    _id,
-  } = isUserExist;
+  const { contactNo: userPhoneNumber, role, id } = isUserExist;
 
   const accessToken = jwtHelpers.createToken(
-    { userPhoneNumber, role, _id },
-    config.jwt.jwt_secret as Secret,
-    config.jwt.jwt_secret_expires_in as string
+    { userPhoneNumber, role, id },
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
   );
 
   const refreshToken = jwtHelpers.createToken(
-    { userPhoneNumber, role, _id },
-    config.jwt.jwt_refresh_secret as Secret,
-    config.jwt.jwt_refresh_experies_in as string
+    { userPhoneNumber, role, id },
+    config.jwt.refresh_secret as Secret,
+    config.jwt.refresh_expires_in as string
   );
 
   return {
     accessToken,
     refreshToken,
-    needPasswordChange,
   };
 };
 /*functino for login User end  */
@@ -69,9 +72,9 @@ const loginUser = async (payload: IAuth): Promise<ILoginUserResponse> => {
 const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   let verifiedToken = null;
   try {
-    verifiedToken = jwtHelpers.verifiedToken(
+    verifiedToken = jwtHelpers.verifyToken(
       token,
-      config.jwt.jwt_refresh_secret as Secret
+      config.jwt.refresh_secret as Secret
     );
   } catch (error) {
     throw new ApiError(httpStatus.FORBIDDEN, 'invalid refresh token');
@@ -80,8 +83,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   const { userPhoneNumber } = verifiedToken;
   // console.log('auth-phone', verifiedToken)
 
-  const user = new User();
-  const isUserExist = await user.isUserExists(userPhoneNumber);
+  const isUserExist = await isUserExists(userPhoneNumber);
 
   if (!isUserExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist');
@@ -91,12 +93,12 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 
   const newAccessToken = jwtHelpers.createToken(
     {
-      phoneNumber: isUserExist.phoneNumber,
+      phoneNumber: isUserExist.contactNo,
       role: isUserExist.role,
-      _id: isUserExist._id,
+      id: isUserExist.id,
     },
-    config.jwt.jwt_secret as Secret,
-    config.jwt.jwt_secret_expires_in as string
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
   );
   return { accessToken: newAccessToken };
 };
