@@ -12,7 +12,7 @@ router.post(
   AuthController.signupUser
 );
 router.post(
-  '/login',
+  '/signin',
   validateRequest(AuthValidation.loginZodSchema),
   AuthController.loginUser
 );

@@ -1,16 +1,23 @@
-import { Prisma, User } from '@prisma/client';
+import { Category, Prisma } from '@prisma/client';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
-import { userSearchableFields } from './user.constant';
-import { IUserFilterRequest } from './user.interface';
+import { categorySearchableFields } from './category.constant';
+import { ICategoryFilterRequest } from './category.interface';
+
+const insertIntoDB = async (data: Category): Promise<Category> => {
+  const result = await prisma.category.create({
+    data,
+  });
+  return result;
+};
 
 const getAllFromDB = async (
-  filters: IUserFilterRequest,
+  filters: ICategoryFilterRequest,
   options: IPaginationOptions
-): Promise<IGenericResponse<User[]>> => {
-  const { searchTerm, ...filterData } = filters;
+): Promise<IGenericResponse<Category[]>> => {
+  const { searchTerm } = filters;
   const { page, limit, skip } = paginationHelpers.calculatePagination(options);
   console.log(filters);
   const andConditions = [];
@@ -18,7 +25,7 @@ const getAllFromDB = async (
 
   if (searchTerm) {
     andConditions.push({
-      OR: userSearchableFields.map(field => ({
+      OR: categorySearchableFields.map(field => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -26,18 +33,10 @@ const getAllFromDB = async (
       })),
     });
   }
-  if (Object.keys(filterData).length > 0) {
-    andConditions.push({
-      AND: Object.keys(filterData).map(key => ({
-        [key]: {
-          equals: (filterData as any)[key],
-        },
-      })),
-    });
-  }
-  const whereConditions: Prisma.UserWhereInput =
+
+  const whereConditions: Prisma.CategoryWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
-  const result = await prisma.user.findMany({
+  const result = await prisma.category.findMany({
     where: whereConditions,
     // where: andConditions,
     skip,
@@ -48,10 +47,10 @@ const getAllFromDB = async (
             [options.sortBy]: options.sortOrder,
           }
         : {
-            name: 'desc',
+            title: 'desc',
           },
   });
-  const total = await prisma.user.count();
+  const total = await prisma.category.count();
 
   return {
     meta: {
@@ -63,8 +62,8 @@ const getAllFromDB = async (
   };
 };
 
-const getDataById = async (id: string): Promise<User | null> => {
-  const result = await prisma.user.findUnique({
+const getDataById = async (id: string): Promise<Category | null> => {
+  const result = await prisma.category.findUnique({
     where: {
       id,
     },
@@ -73,19 +72,22 @@ const getDataById = async (id: string): Promise<User | null> => {
 };
 const updateIntoDB = async (
   id: string,
-  payload: Partial<User>
-): Promise<User> => {
-  const result = await prisma.user.update({
+  payload: Partial<Category>
+): Promise<Category> => {
+  const result = await prisma.category.update({
     where: {
       id,
     },
     data: payload,
+    include: {
+      books: true,
+    },
   });
   return result;
 };
 
-const deleteDataById = async (id: string): Promise<User> => {
-  const result = await prisma.user.delete({
+const deleteDataById = async (id: string): Promise<Category> => {
+  const result = await prisma.category.delete({
     where: {
       id,
     },
@@ -93,7 +95,8 @@ const deleteDataById = async (id: string): Promise<User> => {
   return result;
 };
 
-export const UserService = {
+export const CategoryService = {
+  insertIntoDB,
   getAllFromDB,
   getDataById,
   updateIntoDB,

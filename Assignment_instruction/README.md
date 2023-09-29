@@ -178,7 +178,7 @@ Response Sample Data:
   "success": true,
   "statusCode": 200,
   "message": "User signin successfully!",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiY3VzdG9tZXIiLCJ1c2VySWQiOiJvNTc3LXg4ODgtZGQ4Ni1kZDJmIiwiaWF0IjoxNTE2MjM5MDIyfQ.MejYWi-cw0zf5zFiJ5R09-PrCWOj8auEqAz2XY9im1Q"
+  "token": "https://jwt.io/#debugger-io?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2OTU5NjgzMTAsImV4cCI6MTcyNzUwNDMxMH0.UduYfEdMH-CVqip0q76ZzLClkai9NUM_K6xe-ODhYDI"
 }
 ```
 

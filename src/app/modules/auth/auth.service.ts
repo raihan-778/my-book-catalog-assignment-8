@@ -46,16 +46,16 @@ export const loginUser = async (
   }
   //create accessToken & refreshToken
 
-  const { contactNo: userPhoneNumber, role, id } = isUserExist;
+  const { role, id } = isUserExist;
 
   const accessToken = jwtHelpers.createToken(
-    { userPhoneNumber, role, id },
+    { email, role, id },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
 
   const refreshToken = jwtHelpers.createToken(
-    { userPhoneNumber, role, id },
+    { email, role, id },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
   );
