@@ -9,6 +9,9 @@ import { IBookFilterRequest } from './book.interface';
 const insertIntoDB = async (data: Book): Promise<Book> => {
   const result = await prisma.book.create({
     data,
+    include: {
+      category: true,
+    },
   });
   return result;
 };
@@ -19,7 +22,7 @@ const getAllFromDB = async (
 ): Promise<IGenericResponse<Book[]>> => {
   const { searchTerm, ...filterData } = filters;
   // console.log('ac_service', searchTerm);
-  const { page, limit, skip } = paginationHelpers.calculatePagination(options);
+  const { page, size, skip } = paginationHelpers.calculatePagination(options);
   console.log(filters);
   const andConditions = [];
   console.log(options);
@@ -49,7 +52,7 @@ const getAllFromDB = async (
     where: whereConditions,
     // where: andConditions,
     skip,
-    take: limit,
+    take: size,
     orderBy:
       options.sortBy && options.sortOrder
         ? {
@@ -58,14 +61,19 @@ const getAllFromDB = async (
         : {
             price: 'asc',
           },
+    include: {
+      category: true,
+    },
   });
   const total = await prisma.book.count();
+  const totalPage = Math.ceil(total / 10);
 
   return {
     meta: {
       total,
       page,
-      limit,
+      size,
+      totalPage,
     },
     data: result,
   };

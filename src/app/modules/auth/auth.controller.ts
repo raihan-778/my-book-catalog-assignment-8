@@ -3,7 +3,6 @@ import httpStatus from 'http-status';
 import config from '../../../config';
 import catchAsync from '../../../shared/catchAsync';
 import sendResponse from '../../../shared/sendResponse';
-import { IRefreshTokenResponse } from './auth.interface';
 import { AuthService } from './auth.service';
 const signupUser = catchAsync(async (req: Request, res: Response) => {
   const { ...userData } = req.body;
@@ -41,19 +40,18 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
   const result = await AuthService.refreshToken(refreshToken);
-
+  const { accessToken } = result;
   //set refresh token
   const cookeiOptions = {
     secure: config.env === 'production',
     httpOnly: true,
   };
   res.cookie('refreshToken', refreshToken, cookeiOptions);
-
-  sendResponse<IRefreshTokenResponse>(res, {
+  res.send({
     statusCode: httpStatus.OK,
     success: true,
     message: 'New access token generated successfully',
-    data: result,
+    accessToken,
   });
 });
 

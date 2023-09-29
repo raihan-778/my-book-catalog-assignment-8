@@ -9,7 +9,7 @@ const router = Router();
 
 // router.post('/', UserController.insertIntoDB);
 router.post(
-  '/',
+  '/create-book',
   validateRequest(BookValidation.create),
   BookController.insertIntoDB
 );
@@ -27,4 +27,4 @@ router.patch(
   BookController.updateIntoDB
 );
 
-export const CategoryRoutes = router;
+export const BookRoutes = router;
