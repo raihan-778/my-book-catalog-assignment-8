@@ -1,11 +1,8 @@
 import { Book, Prisma } from '@prisma/client';
-import httpStatus from 'http-status';
-import ApiError from '../../../errors/ApiError';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
-import { asyncForEach } from '../../../shared/utils';
 import { bookSearchableFields } from './book.constant';
 import { IBookFilterRequest } from './book.interface';
 
