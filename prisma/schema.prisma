@@ -73,10 +73,13 @@ model Order {
 }
 
 model OrderedBook {
-  id      String @id @default(uuid())
-  orderId String
-  order   Order  @relation(fields: [orderId], references: [id])
-  bookId  String
+  id       String @id @default(uuid())
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id])
+  bookId   String
+  quantity Int
+
+  @@map("orderedBooks")
 }
 
 enum UserRole {

@@ -54,6 +54,11 @@
             "date": 1696007889579,
             "name": "D:\\Programming-hero\\PhWevDevLevel2\\level_2_assignments\\back-end\\prisma-postgreSql_assignment-8\\logs\\winston\\errors\\phu-2023-29-09-23-error.log",
             "hash": "751f660429c31c90dc5e79c7c06308aca02b4805f1cd1cfd03e38cc9809e411b"
+        },
+        {
+            "date": 1696043948846,
+            "name": "D:\\Programming-hero\\PhWevDevLevel2\\level_2_assignments\\back-end\\prisma-postgreSql_assignment-8\\logs\\winston\\errors\\phu-2023-30-09-09-error.log",
+            "hash": "5c9d51c1988edf6724a298a64e209ff5645c89a26c52c85e0cc7a1a67bc8a9a2"
         }
     ],
     "hashType": "sha256"
