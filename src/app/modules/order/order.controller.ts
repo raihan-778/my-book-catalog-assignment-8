@@ -7,10 +7,12 @@ import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
 import { orderFilterableFields } from './order.constant';
 import { OrderService } from './order.service';
+import { JwtPayload } from 'jsonwebtoken';
 
 const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
-  const { ...OrderData } = req.body;
-  const result = await OrderService.insertIntoDB(OrderData);
+  const { ...orderData } = req.body;
+
+  const result = await OrderService.insertIntoDB(orderData);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -18,7 +20,24 @@ const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const createOrder = catchAsync(async (req: Request, res: Response) => {
+  // Extract user information from the decoded token
 
+  console.log('order-controller', req.user);
+  const { id } = req.user as JwtPayload;
+
+  // Request body containing ordered books
+  const { orderedBooks } = req.body;
+
+  // Create the order using the service function
+  const order = await OrderService.createOrder(id, orderedBooks);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Order Created Successfully',
+    data: order,
+  });
+});
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, orderFilterableFields);
   const options = pick(req.query, paginationFields);
@@ -49,4 +68,5 @@ export const OrderController = {
   insertIntoDB,
   getAllFromDB,
   getDataById,
+  createOrder,
 };

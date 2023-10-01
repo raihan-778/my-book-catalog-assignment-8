@@ -49,13 +49,13 @@ export const loginUser = async (
   const { role, id } = isUserExist;
 
   const accessToken = jwtHelpers.createToken(
-    { email, role, id },
+    { id, email, role },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
 
   const refreshToken = jwtHelpers.createToken(
-    { email, role, id },
+    { id, email, role },
     config.jwt.refresh_secret as Secret,
     config.jwt.refresh_expires_in as string
   );

@@ -1,17 +1,51 @@
-import { Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import { ENUM_USER_ROLE } from '../../../enums/user';
 import auth from '../../middlewares/auth';
-import validateRequest from '../../middlewares/validateRequest';
+// import validateRequest from '../../middlewares/validateRequest';
 
+import { Secret } from 'jsonwebtoken';
+import config from '../../../config';
+import { jwtHelpers } from '../../../helpers/jwtHelpers';
 import { OrderController } from './order.controller';
 
 const router = Router();
 
+// Middleware to decode and verify the JWT token
+const decodeTokenMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.headers.authorization;
+
+  try {
+    // Verify and decode the JWT token
+    const decodedToken = jwtHelpers.verifyToken(
+      token as string,
+      config.jwt.secret as Secret
+    );
+
+    // Attach user information to the request
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    // Handle token verification errors (e.g., token expired, invalid token)
+    console.error('Token verification error:', error);
+    res.status(401).json({
+      success: false,
+      message: 'Unauthorized',
+    });
+  }
+};
+
 // router.post('/', UserController.insertIntoDB);
 router.post(
   '/create-Order',
+
+  auth(ENUM_USER_ROLE.CUSTOMER),
+  decodeTokenMiddleware,
   //   validateRequest(BookValidation.create),
-  OrderController.insertIntoDB
+  OrderController.createOrder
 );
 router.get('/', auth(ENUM_USER_ROLE.ADMIN), OrderController.getAllFromDB);
 // router.get('/:id', BookController.getDataById);

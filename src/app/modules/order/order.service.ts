@@ -1,4 +1,4 @@
-import { Order, Prisma } from '@prisma/client';
+import { Order, OrderedBook, Prisma } from '@prisma/client';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
@@ -14,6 +14,31 @@ const insertIntoDB = async (data: Order): Promise<Order> => {
     },
   });
   return result;
+};
+
+const createOrder = async (
+  userId: string,
+  orderedBooks: OrderedBook[]
+): Promise<Partial<OrderedBook>> => {
+  try {
+    // Create the order in the database
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        orderedBooks: {
+          create: orderedBooks.map(({ bookId, quantity }) => ({
+            bookId,
+            quantity,
+          })),
+        },
+      },
+    });
+
+    return order;
+  } catch (error) {
+    console.error('Error creating order:', error);
+    throw error;
+  }
 };
 
 const getAllFromDB = async (
@@ -91,5 +116,6 @@ const getDataById = async (id: string): Promise<Order | null> => {
 export const OrderService = {
   insertIntoDB,
   getAllFromDB,
-  getDataById
+  getDataById,
+  createOrder,
 };

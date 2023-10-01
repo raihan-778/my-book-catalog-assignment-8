@@ -139,3 +139,76 @@
     });
     return responseData;
   }; */
+
+/* const express = require('express');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+const router = express.Router();
+
+// Middleware to decode and verify the JWT token
+const decodeTokenMiddleware = (req, res, next) => {
+  // Verify and decode the JWT here, and attach the user information to req.user
+  // You can use libraries like 'jsonwebtoken' for this purpose
+  const token = req.headers.authorization; // Assuming the token is in the 'Authorization' header
+  // Verify and decode the token here
+  // ...
+
+  // Attach user information to the request
+  req.user = decodedToken; // Replace with the decoded token
+  next();
+};
+
+// Route to create a new order
+router.post('/create-order', decodeTokenMiddleware, async (req, res) => {
+  try {
+    // Extract user information from the decoded token
+    const { userId } = req.user;
+
+    // Request body containing ordered books
+    const { orderedBooks } = req.body;
+
+    // Calculate the total price based on the ordered books and quantities (implement this)
+    const total = calculateTotalPrice(orderedBooks);
+
+    // Create the order in the database
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        total,
+        status: 'pending', // You can set the initial status as needed
+        orderedBooks: {
+          create: orderedBooks.map(({ bookId, quantity }) => ({
+            bookId,
+            quantity,
+          })),
+        },
+      },
+      include: {
+        orderedBooks: {
+          include: {
+            book: true,
+          },
+        },
+      },
+    });
+
+    // Respond with the newly created order
+    res.status(201).json({
+      success: true,
+      statusCode: 201,
+      message: 'Order created successfully',
+      data: order,
+    });
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({
+      success: false,
+      statusCode: 500,
+      message: 'Internal server error',
+    });
+  }
+});
+
+module.exports = router;
+ */

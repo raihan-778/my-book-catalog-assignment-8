@@ -18,6 +18,7 @@ export const isUserExists = async (
       email,
     },
     select: {
+      id: true,
       email: true,
       password: true,
       role: true,
