@@ -100,6 +100,14 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
+const getDataByCategoryId = (categoryId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.book.findUnique({
+        where: {
+            id: categoryId, // Add the condition for the category here
+        },
+    });
+    return result;
+});
 //update data by Id into DB Route
 const updateIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.book.update({
@@ -125,4 +133,5 @@ exports.BookService = {
     getDataById,
     updateIntoDB,
     deleteDataById,
+    getDataByCategoryId,
 };

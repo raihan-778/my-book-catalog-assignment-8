@@ -29,8 +29,8 @@ const pagination_1 = require("../../../constants/pagination");
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
-const book_service_1 = require("./book.service");
 const book_constant_1 = require("./book.constant");
+const book_service_1 = require("./book.service");
 const insertIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const BookData = __rest(req.body, []);
     const result = yield book_service_1.BookService.insertIntoDB(BookData);
@@ -64,6 +64,15 @@ const getDataById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result,
     });
 }));
+const getDataByCategoryId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield book_service_1.BookService.getDataByCategoryId(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Book Single data Fatched!!',
+        data: result,
+    });
+}));
 const updateIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield book_service_1.BookService.updateIntoDB(id, req.body);
@@ -90,4 +99,5 @@ exports.BookController = {
     getDataById,
     updateIntoDB,
     deleteDataById,
+    getDataByCategoryId,
 };

@@ -9,7 +9,7 @@ const router = Router();
 
 // router.post('/', UserController.insertIntoDB);
 router.get('/:id', BookController.getDataById);
-router.get('category/:id', BookController.getDataByCategoryId);
+router.get('/:id/category', BookController.getDataByCategoryId);
 router.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),
