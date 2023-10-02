@@ -26,6 +26,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
   // console.log('Filters:', filters);
   // console.log('Options:', options);
   const result = await BookService.getAllFromDB(filters, options);
+  console.log(req.params);
   sendResponse<Book[]>(res, {
     statusCode: httpStatus.OK,
     success: true,

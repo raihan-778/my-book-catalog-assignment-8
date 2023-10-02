@@ -65,13 +65,35 @@ const getDataById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     });
 }));
 const getDataByCategoryId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield book_service_1.BookService.getDataByCategoryId(req.params.id);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: 'Book Single data Fatched!!',
-        data: result,
-    });
+    try {
+        const categoryId = req.params.id;
+        const result = yield book_service_1.BookService.getDataByCategoryId(categoryId);
+        console.log('result', result);
+        if ((result === null || result === void 0 ? void 0 : result.length) === 0) {
+            // No books found for the specified category
+            return (0, sendResponse_1.default)(res, {
+                statusCode: http_status_1.default.NOT_FOUND,
+                success: false,
+                message: 'No books found for the specified category',
+                data: [],
+            });
+        }
+        (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.OK,
+            success: true,
+            message: 'Books retrieved successfully',
+            data: result,
+        });
+    }
+    catch (error) {
+        console.error('Error retrieving books by category:', error);
+        (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.INTERNAL_SERVER_ERROR,
+            success: false,
+            message: 'Internal server error',
+            data: [],
+        });
+    }
 }));
 const updateIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;

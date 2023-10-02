@@ -101,9 +101,12 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getDataByCategoryId = (categoryId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.book.findUnique({
+    const result = yield prisma_1.default.book.findMany({
         where: {
-            id: categoryId, // Add the condition for the category here
+            categoryId, // Add the condition for the category here
+        },
+        include: {
+            category: true,
         },
     });
     return result;

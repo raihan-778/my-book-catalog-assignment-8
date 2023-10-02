@@ -43,14 +43,14 @@ export const decodeTokenMiddleware = async (
 };
 
 // router.post('/', UserController.insertIntoDB);
-router.get('/', UserController.getAllFromDB);
+router.get('/', auth(ENUM_USER_ROLE.ADMIN), UserController.getAllFromDB);
 router.get(
   '/',
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
   decodeTokenMiddleware,
   UserController.getUserProfile
 );
-router.get('/:id', UserController.getDataById);
+router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getDataById);
 router.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),

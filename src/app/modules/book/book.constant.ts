@@ -3,6 +3,7 @@ export const bookSearchableFields = [
   'author',
   'price',
   'genre',
+
   'publicationDate',
   'categoryId',
 ];
@@ -11,6 +12,7 @@ export const bookFilterableFields = [
   'title',
   'author',
   'price',
+
   'genre',
   'publicationDate',
   'categoryId',

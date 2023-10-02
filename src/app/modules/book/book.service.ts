@@ -18,7 +18,9 @@ const insertIntoDB = async (data: Book): Promise<Book> => {
 
 const getAllFromDB = async (
   filters: IBookFilterRequest,
-  options: IPaginationOptions
+  options: IPaginationOptions,
+  minPrice?: number,
+  maxPrice?: number
 ): Promise<IGenericResponse<Book[]>> => {
   const { searchTerm, ...filterData } = filters;
   // console.log('ac_service', searchTerm);
@@ -37,6 +39,22 @@ const getAllFromDB = async (
       })),
     });
   }
+  if (minPrice !== undefined) {
+    andConditions.push({
+      price: {
+        gte: minPrice, // Greater than or equal to minPrice
+      },
+    });
+  }
+
+  if (maxPrice !== undefined) {
+    andConditions.push({
+      price: {
+        lte: maxPrice, // Less than or equal to maxPrice
+      },
+    });
+  }
+
   if (Object.keys(filterData).length > 0) {
     andConditions.push({
       AND: Object.keys(filterData).map(key => ({

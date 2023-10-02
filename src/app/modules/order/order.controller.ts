@@ -33,6 +33,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 
   const userType: string = req.user?.role; // Modify to match your actual user role property
   const userId: string = userType === 'customer' ? req.user?.userId : undefined;
+  console.log('user', req.user);
 
   // console.log('Filters:', filters);
   // console.log('Options:', options);
