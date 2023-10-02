@@ -36,6 +36,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 });
 const getDataById = catchAsync(async (req: Request, res: Response) => {
   const result = await BookService.getDataById(req.params.id);
+
   sendResponse<Book>(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -44,13 +45,37 @@ const getDataById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getDataByCategoryId = catchAsync(async (req: Request, res: Response) => {
-  const result = await BookService.getDataByCategoryId(req.params.id);
-  sendResponse<Book>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Book Single data Fatched!!',
-    data: result,
-  });
+  try {
+    const categoryId = req.params.id;
+
+    const result = await BookService.getDataByCategoryId(categoryId);
+    console.log('result', result);
+
+    if (result?.length === 0) {
+      // No books found for the specified category
+      return sendResponse<Book[]>(res, {
+        statusCode: httpStatus.NOT_FOUND,
+        success: false,
+        message: 'No books found for the specified category',
+        data: [],
+      });
+    }
+
+    sendResponse<Book[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Books retrieved successfully',
+      data: result,
+    });
+  } catch (error) {
+    console.error('Error retrieving books by category:', error);
+    sendResponse<Book[]>(res, {
+      statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+      success: false,
+      message: 'Internal server error',
+      data: [],
+    });
+  }
 });
 const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;

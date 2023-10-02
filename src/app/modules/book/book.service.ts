@@ -88,12 +88,16 @@ const getDataById = async (id: string): Promise<Book | null> => {
   });
   return result;
 };
+
 const getDataByCategoryId = async (
   categoryId: string
-): Promise<Book | null> => {
-  const result = await prisma.book.findUnique({
+): Promise<Book[] | null> => {
+  const result = await prisma.book.findMany({
     where: {
-      id: categoryId, // Add the condition for the category here
+      categoryId, // Add the condition for the category here
+    },
+    include: {
+      category: true,
     },
   });
   return result;
