@@ -8,13 +8,8 @@ import { BookValidation } from './book.validation';
 const router = Router();
 
 // router.post('/', UserController.insertIntoDB);
-router.post(
-  '/create-book',
-  validateRequest(BookValidation.create),
-  BookController.insertIntoDB
-);
-router.get('/', BookController.getAllFromDB);
 router.get('/:id', BookController.getDataById);
+router.get('category/:id', BookController.getDataByCategoryId);
 router.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),
@@ -26,5 +21,11 @@ router.patch(
   validateRequest(BookValidation.update),
   BookController.updateIntoDB
 );
+router.post(
+  '/create-book',
+  validateRequest(BookValidation.create),
+  BookController.insertIntoDB
+);
+router.get('/', BookController.getAllFromDB);
 
 export const BookRoutes = router;

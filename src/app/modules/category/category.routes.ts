@@ -11,6 +11,7 @@ const router = Router();
 router.post('/', CategoryController.insertIntoDB);
 router.get('/', CategoryController.getAllFromDB);
 router.get('/:id', CategoryController.getDataById);
+
 router.delete(
   '/:id',
   auth(ENUM_USER_ROLE.ADMIN),

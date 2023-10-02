@@ -5,8 +5,8 @@ import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
-import { BookService } from './book.service';
 import { bookFilterableFields } from './book.constant';
+import { BookService } from './book.service';
 
 const insertIntoDB = catchAsync(async (req: Request, res: Response) => {
   const { ...BookData } = req.body;
@@ -43,6 +43,15 @@ const getDataById = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getDataByCategoryId = catchAsync(async (req: Request, res: Response) => {
+  const result = await BookService.getDataByCategoryId(req.params.id);
+  sendResponse<Book>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Book Single data Fatched!!',
+    data: result,
+  });
+});
 const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -72,4 +81,5 @@ export const BookController = {
   getDataById,
   updateIntoDB,
   deleteDataById,
+  getDataByCategoryId,
 };

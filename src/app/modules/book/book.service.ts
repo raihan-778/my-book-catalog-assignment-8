@@ -88,6 +88,17 @@ const getDataById = async (id: string): Promise<Book | null> => {
   });
   return result;
 };
+const getDataByCategoryId = async (
+  categoryId: string
+): Promise<Book | null> => {
+  const result = await prisma.book.findUnique({
+    where: {
+      id: categoryId, // Add the condition for the category here
+    },
+  });
+  return result;
+};
+
 //update data by Id into DB Route
 const updateIntoDB = async (
   id: string,
@@ -118,4 +129,5 @@ export const BookService = {
   getDataById,
   updateIntoDB,
   deleteDataById,
+  getDataByCategoryId,
 };

@@ -42,6 +42,7 @@ const getDataById = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const updateIntoDB = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -71,4 +72,5 @@ export const CategoryController = {
   getDataById,
   updateIntoDB,
   deleteDataById,
+  
 };
