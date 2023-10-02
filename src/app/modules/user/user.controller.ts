@@ -1,6 +1,7 @@
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
+import { JwtPayload } from 'jsonwebtoken';
 import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
@@ -25,6 +26,17 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 });
 const getDataById = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.getDataById(req.params.id);
+  sendResponse<User>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User Single data Fatched!!',
+    data: result,
+  });
+});
+const getUserProfile = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.user as JwtPayload;
+  console.log('profile', req.user);
+  const result = await UserService.getUserProfile(userId);
   sendResponse<User>(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -60,4 +72,5 @@ export const UserController = {
   getDataById,
   updateIntoDB,
   deleteDataById,
+  getUserProfile,
 };

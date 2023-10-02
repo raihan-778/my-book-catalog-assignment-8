@@ -71,6 +71,19 @@ const getDataById = async (id: string): Promise<User | null> => {
   });
   return result;
 };
+const getUserProfile = async (
+  userId: string | undefined
+): Promise<User | null> => {
+  const result = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!userId) {
+    return null;
+  }
+  return result;
+};
 const updateIntoDB = async (
   id: string,
   payload: Partial<User>
@@ -98,4 +111,5 @@ export const UserService = {
   getDataById,
   updateIntoDB,
   deleteDataById,
+  getUserProfile,
 };

@@ -47,7 +47,20 @@ router.post(
   //   validateRequest(BookValidation.create),
   OrderController.createOrder
 );
-router.get('/', auth(ENUM_USER_ROLE.ADMIN), OrderController.getAllFromDB);
+router.get(
+  '/',
+
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
+  decodeTokenMiddleware,
+  OrderController.getAllFromDB
+);
+router.get(
+  '/:id',
+
+  auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
+  decodeTokenMiddleware,
+  OrderController.getDataById
+);
 // router.get('/:id', BookController.getDataById);
 // router.delete(
 //   '/:id',

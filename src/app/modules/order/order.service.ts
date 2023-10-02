@@ -6,16 +6,6 @@ import prisma from '../../../shared/prisma';
 import { bookSearchableFields } from '../book/book.constant';
 import { IOrderFilterRequest } from './order.interface';
 
-const insertIntoDB = async (data: Order): Promise<Order> => {
-  const result = await prisma.order.create({
-    data,
-    include: {
-      orderedBooks: true,
-    },
-  });
-  return result;
-};
-
 const createOrder = async (
   userId: string,
   orderedBooks: OrderedBook[]
@@ -32,6 +22,9 @@ const createOrder = async (
           })),
         },
       },
+      include: {
+        orderedBooks: true,
+      },
     });
 
     return order;
@@ -43,14 +36,16 @@ const createOrder = async (
 
 const getAllFromDB = async (
   filters: IOrderFilterRequest,
-  options: IPaginationOptions
+  options: IPaginationOptions,
+  userType: string, // Add userType as a parameter
+  userId?: string
 ): Promise<IGenericResponse<Order[]>> => {
-  const { searchTerm, ...filterData } = filters;
+  const { searchTerm } = filters;
+
   // console.log('ac_service', searchTerm);
   const { page, size, skip } = paginationHelpers.calculatePagination(options);
-  console.log(filters);
+
   const andConditions = [];
-  console.log(options);
 
   if (searchTerm) {
     andConditions.push({
@@ -62,19 +57,17 @@ const getAllFromDB = async (
       })),
     });
   }
-  if (Object.keys(filterData).length > 0) {
+  if (userType === 'customer' && userId) {
     andConditions.push({
-      AND: Object.keys(filterData).map(key => ({
-        [key]: {
-          equals: (filterData as any)[key],
-        },
-      })),
+      userId, // Filter by the user's ID
     });
   }
+
   const whereConditions: Prisma.OrderWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
   const result = await prisma.order.findMany({
     where: whereConditions,
+
     // where: andConditions,
     skip,
     take: size,
@@ -109,12 +102,14 @@ const getDataById = async (id: string): Promise<Order | null> => {
     where: {
       id,
     },
+    include: {
+      orderedBooks: true,
+    },
   });
   return result;
 };
 
 export const OrderService = {
-  insertIntoDB,
   getAllFromDB,
   getDataById,
   createOrder,
