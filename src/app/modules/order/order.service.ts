@@ -3,7 +3,7 @@ import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import prisma from '../../../shared/prisma';
-import { bookSearchableFields } from '../book/book.constant';
+import { bookSearchableFields } from './../book/book.constant';
 import { IOrderFilterRequest } from './order.interface';
 
 const createOrder = async (

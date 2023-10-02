@@ -1,4 +1,4 @@
-Live Link:
+Live Link:https://prisma-postgre-sql-assignment-8.vercel.app
 
 #### User
 
