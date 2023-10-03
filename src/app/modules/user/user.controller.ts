@@ -15,6 +15,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
   // console.log('Filters:', filters);
   // console.log('Options:', options);
   const result = await UserService.getAllFromDB(filters, options);
+
   sendResponse<User[]>(res, {
     statusCode: httpStatus.OK,
     success: true,

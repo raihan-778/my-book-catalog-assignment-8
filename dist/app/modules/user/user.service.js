@@ -84,13 +84,13 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
-const getUserProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+const getUserProfile = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.user.findUnique({
         where: {
-            id: userId,
+            id,
         },
     });
-    if (!userId) {
+    if (!id) {
         return null;
     }
     return result;

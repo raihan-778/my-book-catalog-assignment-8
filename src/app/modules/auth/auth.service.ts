@@ -8,7 +8,7 @@ import prisma from '../../../shared/prisma';
 import { isPasswordMatched, isUserExists } from '../../../shared/utils';
 import { ILoginUserResponse, IRefreshTokenResponse } from './auth.interface';
 //function for signup user
-const signupUser = async (userData: User): Promise<User> => {
+const signupUser = async (userData: User): Promise<Partial<User>> => {
   if (!userData.password) {
     userData.password = config.default_user_pass as string;
   }
@@ -48,7 +48,7 @@ export const loginUser = async (
 
   const { role, id } = isUserExist;
 
-  const accessToken = jwtHelpers.createToken(
+  const token = jwtHelpers.createToken(
     { id, email, role },
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
@@ -61,7 +61,7 @@ export const loginUser = async (
   );
 
   return {
-    accessToken,
+    token,
     refreshToken,
   };
 };
@@ -100,7 +100,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
-  return { accessToken: newAccessToken };
+  return { token: newAccessToken };
 };
 
 /* function for create access token end */

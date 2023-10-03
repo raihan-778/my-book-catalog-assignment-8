@@ -55,10 +55,9 @@ const getDataById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.id;
     const userRole = (_d = req.user) === null || _d === void 0 ? void 0 : _d.role;
     try {
-        console.log('result', req.params.id);
-        const result = yield order_service_1.OrderService.getDataById(req.params.id);
         if (userRole === 'admin' ||
             (userRole === 'customer' && userId === req.params.id)) {
+            const result = yield order_service_1.OrderService.getDataById(req.params.id);
             (0, sendResponse_1.default)(res, {
                 statusCode: http_status_1.default.OK,
                 success: true,

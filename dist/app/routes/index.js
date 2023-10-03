@@ -9,6 +9,7 @@ const category_routes_1 = require("../modules/category/category.routes");
 const order_routes_1 = require("../modules/order/order.routes");
 const user_route_1 = require("../modules/user/user.route");
 const auth_route_1 = require("./../modules/auth/auth.route");
+const user_profile_route_1 = require("./../modules/user/user.profile.route");
 const router = express_1.default.Router();
 const moduleRoutes = [
     // ... routes
@@ -18,7 +19,7 @@ const moduleRoutes = [
     },
     {
         path: '/profile',
-        routes: user_route_1.UserRoutes,
+        routes: user_profile_route_1.UserProfileRoutes,
     },
     {
         path: '/auth',

@@ -7,6 +7,10 @@ import { AuthService } from './auth.service';
 const signupUser = catchAsync(async (req: Request, res: Response) => {
   const { ...userData } = req.body;
   const result = await AuthService.signupUser(userData);
+
+  if (result) {
+    delete result?.password;
+  }
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -18,7 +22,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body;
   const result = await AuthService.loginUser(loginData);
 
-  const { refreshToken, accessToken } = result;
+  const { refreshToken, token } = result;
 
   //set refresh token
 
@@ -32,7 +36,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'User logged in successfully',
-    accessToken,
+    token,
   });
 });
 
@@ -40,7 +44,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies;
   const result = await AuthService.refreshToken(refreshToken);
-  const { accessToken } = result;
+  const { token } = result;
   //set refresh token
   const cookeiOptions = {
     secure: config.env === 'production',
@@ -51,7 +55,7 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'New access token generated successfully',
-    accessToken,
+    token,
   });
 });
 
