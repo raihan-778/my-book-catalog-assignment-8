@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrderRoutes = void 0;
 const express_1 = require("express");
-const user_1 = require("../../../enums/user");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
+const user_1 = require("./../../../enums/user");
 const config_1 = __importDefault(require("../../../config"));
 const jwtHelpers_1 = require("../../../helpers/jwtHelpers");
 const order_controller_1 = require("./order.controller");
@@ -43,7 +43,13 @@ const decodeTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void
 router.post('/create-Order', (0, auth_1.default)(user_1.ENUM_USER_ROLE.CUSTOMER), decodeTokenMiddleware, 
 //   validateRequest(BookValidation.create),
 order_controller_1.OrderController.createOrder);
-router.get('/', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.CUSTOMER), decodeTokenMiddleware, order_controller_1.OrderController.getAllFromDB);
+// router.get(
+//   '/',
+//   auth(ENUM_USER_ROLE.ADMIN),
+//   decodeTokenMiddleware,
+//   OrderController.getAllFromDB
+// );
+router.get('/', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.CUSTOMER), decodeTokenMiddleware, order_controller_1.OrderController.getAllOrders);
 router.get('/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.CUSTOMER), decodeTokenMiddleware, order_controller_1.OrderController.getDataById);
 // router.get('/:id', BookController.getDataById);
 // router.delete(

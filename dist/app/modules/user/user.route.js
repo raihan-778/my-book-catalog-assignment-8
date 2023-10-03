@@ -43,9 +43,9 @@ const decodeTokenMiddleware = (req, res, next) => __awaiter(void 0, void 0, void
 });
 exports.decodeTokenMiddleware = decodeTokenMiddleware;
 // router.post('/', UserController.insertIntoDB);
-router.get('/', user_controller_1.UserController.getAllFromDB);
+router.get('/', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), user_controller_1.UserController.getAllFromDB);
 router.get('/', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN, user_1.ENUM_USER_ROLE.CUSTOMER), exports.decodeTokenMiddleware, user_controller_1.UserController.getUserProfile);
-router.get('/:id', user_controller_1.UserController.getDataById);
+router.get('/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), user_controller_1.UserController.getDataById);
 router.delete('/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), user_controller_1.UserController.deleteDataById);
 router.patch('/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), (0, validateRequest_1.default)(user_validation_1.UserValidation.updateUserZodSchema), user_controller_1.UserController.updateIntoDB);
 exports.UserRoutes = router;

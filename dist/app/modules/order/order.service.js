@@ -40,7 +40,7 @@ const createOrder = (userId, orderedBooks) => __awaiter(void 0, void 0, void 0, 
         throw error;
     }
 });
-const getAllFromDB = (filters, options, userType, // Add userType as a parameter
+const getAllOrders = (filters, options, userType, // Add userType as a parameter
 userId) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = filters;
     // console.log('ac_service', searchTerm);
@@ -102,7 +102,7 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 exports.OrderService = {
-    getAllFromDB,
     getDataById,
     createOrder,
+    getAllOrders,
 };

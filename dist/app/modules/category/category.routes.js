@@ -12,7 +12,7 @@ const category_controller_1 = require("./category.controller");
 const category_validation_1 = require("./category.validation");
 const router = (0, express_1.Router)();
 // router.post('/', UserController.insertIntoDB);
-router.post('/', category_controller_1.CategoryController.insertIntoDB);
+router.post('/', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), category_controller_1.CategoryController.insertIntoDB);
 router.get('/', category_controller_1.CategoryController.getAllFromDB);
 router.get('/:id', category_controller_1.CategoryController.getDataById);
 router.delete('/:id', (0, auth_1.default)(user_1.ENUM_USER_ROLE.ADMIN), category_controller_1.CategoryController.deleteDataById);

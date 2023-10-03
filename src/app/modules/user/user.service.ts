@@ -71,15 +71,13 @@ const getDataById = async (id: string): Promise<User | null> => {
   });
   return result;
 };
-const getUserProfile = async (
-  userId: string | undefined
-): Promise<User | null> => {
+const getUserProfile = async (id: string | undefined): Promise<User | null> => {
   const result = await prisma.user.findUnique({
     where: {
-      id: userId,
+      id,
     },
   });
-  if (!userId) {
+  if (!id) {
     return null;
   }
   return result;

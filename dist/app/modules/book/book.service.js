@@ -36,7 +36,7 @@ const insertIntoDB = (data) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
-const getAllFromDB = (filters, options) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllFromDB = (filters, options, minPrice, maxPrice) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
     // console.log('ac_service', searchTerm);
     const { page, size, skip } = paginationHelper_1.paginationHelpers.calculatePagination(options);
@@ -51,6 +51,20 @@ const getAllFromDB = (filters, options) => __awaiter(void 0, void 0, void 0, fun
                     mode: 'insensitive',
                 },
             })),
+        });
+    }
+    if (minPrice !== undefined) {
+        andConditions.push({
+            price: {
+                gte: minPrice, // Greater than or equal to minPrice
+            },
+        });
+    }
+    if (maxPrice !== undefined) {
+        andConditions.push({
+            price: {
+                lte: maxPrice, // Less than or equal to maxPrice
+            },
         });
     }
     if (Object.keys(filterData).length > 0) {

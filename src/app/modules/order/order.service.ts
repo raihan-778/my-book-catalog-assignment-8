@@ -34,7 +34,7 @@ const createOrder = async (
   }
 };
 
-const getAllFromDB = async (
+const getAllOrders = async (
   filters: IOrderFilterRequest,
   options: IPaginationOptions,
   userType: string, // Add userType as a parameter
@@ -110,7 +110,7 @@ const getDataById = async (id: string): Promise<Order | null> => {
 };
 
 export const OrderService = {
-  getAllFromDB,
   getDataById,
   createOrder,
+  getAllOrders,
 };

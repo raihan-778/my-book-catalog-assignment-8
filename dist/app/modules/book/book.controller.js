@@ -47,6 +47,7 @@ const getAllFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     // console.log('Filters:', filters);
     // console.log('Options:', options);
     const result = yield book_service_1.BookService.getAllFromDB(filters, options);
+    console.log(req.params);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

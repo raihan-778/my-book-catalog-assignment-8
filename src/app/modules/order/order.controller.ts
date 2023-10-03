@@ -12,7 +12,6 @@ import { OrderService } from './order.service';
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   // Extract user information from the decoded token
 
-  console.log('order-controller', req.user);
   const { id } = req.user as JwtPayload;
 
   // Request body containing ordered books
@@ -27,18 +26,14 @@ const createOrder = catchAsync(async (req: Request, res: Response) => {
     data: order,
   });
 });
-const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
+
+const getAllOrders = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, orderFilterableFields);
   const options = pick(req.query, paginationFields);
-
   const userType: string = req.user?.role; // Modify to match your actual user role property
   const userId: string = userType === 'customer' ? req.user?.userId : undefined;
-  console.log('user', req.user);
-
-  // console.log('Filters:', filters);
-  // console.log('Options:', options);
-
-  const result = await OrderService.getAllFromDB(
+  console.log('user:', userId, userType);
+  const result = await OrderService.getAllOrders(
     filters,
     options,
     userType,
@@ -56,24 +51,34 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
 const getDataById = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const userRole = req.user?.role;
-  console.log(req.user);
 
-  const result = await OrderService.getDataById(req.params.id);
-  console.log(result);
-
-  if (userRole !== 'admin' && userId !== result?.userId) {
-    throw new Error('You are not authorized See This Order Details');
+  try {
+    if (
+      userRole === 'admin' ||
+      (userRole === 'customer' && userId === req.params.id)
+    ) {
+      const result = await OrderService.getDataById(req.params.id);
+      sendResponse<Order>(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Order Single data Fatched!!',
+        data: result,
+      });
+    } else {
+      throw new Error('You are not authorized See This Order Details');
+    }
+  } catch (error) {
+    console.error('Error fetching order data:', error);
+    sendResponse(res, {
+      statusCode: httpStatus.FORBIDDEN, // You can choose an appropriate HTTP status code
+      success: false,
+      message: 'Access Denied',
+    });
   }
-  sendResponse<Order>(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Order Single data Fatched!!',
-    data: result,
-  });
 });
 
 export const OrderController = {
-  getAllFromDB,
   getDataById,
   createOrder,
+  getAllOrders,
 };

@@ -1,7 +1,6 @@
 import { User } from '@prisma/client';
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import { JwtPayload } from 'jsonwebtoken';
 import { paginationFields } from '../../../constants/pagination';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
@@ -34,8 +33,10 @@ const getDataById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getUserProfile = catchAsync(async (req: Request, res: Response) => {
-  const { userId } = req.user as JwtPayload;
+  const userId = req.user?.id;
   console.log('profile', req.user);
+  console.log('profile-Id', req.user?.id);
+
   const result = await UserService.getUserProfile(userId);
   sendResponse<User>(res, {
     statusCode: httpStatus.OK,

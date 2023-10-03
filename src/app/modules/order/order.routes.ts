@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { ENUM_USER_ROLE } from '../../../enums/user';
 import auth from '../../middlewares/auth';
+import { ENUM_USER_ROLE } from './../../../enums/user';
 // import validateRequest from '../../middlewares/validateRequest';
 
 import { Secret } from 'jsonwebtoken';
@@ -47,12 +47,19 @@ router.post(
   //   validateRequest(BookValidation.create),
   OrderController.createOrder
 );
+// router.get(
+//   '/',
+
+//   auth(ENUM_USER_ROLE.ADMIN),
+//   decodeTokenMiddleware,
+//   OrderController.getAllFromDB
+// );
 router.get(
   '/',
 
   auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.CUSTOMER),
   decodeTokenMiddleware,
-  OrderController.getAllFromDB
+  OrderController.getAllOrders
 );
 router.get(
   '/:id',

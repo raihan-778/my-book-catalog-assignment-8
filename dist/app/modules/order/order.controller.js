@@ -22,7 +22,6 @@ const order_constant_1 = require("./order.constant");
 const order_service_1 = require("./order.service");
 const createOrder = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Extract user information from the decoded token
-    console.log('order-controller', req.user);
     const { id } = req.user;
     // Request body containing ordered books
     const { orderedBooks } = req.body;
@@ -35,15 +34,14 @@ const createOrder = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: order,
     });
 }));
-const getAllFromDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const filters = (0, pick_1.default)(req.query, order_constant_1.orderFilterableFields);
     const options = (0, pick_1.default)(req.query, pagination_1.paginationFields);
     const userType = (_a = req.user) === null || _a === void 0 ? void 0 : _a.role; // Modify to match your actual user role property
     const userId = userType === 'customer' ? (_b = req.user) === null || _b === void 0 ? void 0 : _b.userId : undefined;
-    // console.log('Filters:', filters);
-    // console.log('Options:', options);
-    const result = yield order_service_1.OrderService.getAllFromDB(filters, options, userType, userId);
+    console.log('user:', userId, userType);
+    const result = yield order_service_1.OrderService.getAllOrders(filters, options, userType, userId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -56,21 +54,33 @@ const getDataById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     var _c, _d;
     const userId = (_c = req.user) === null || _c === void 0 ? void 0 : _c.id;
     const userRole = (_d = req.user) === null || _d === void 0 ? void 0 : _d.role;
-    console.log(req.user);
-    const result = yield order_service_1.OrderService.getDataById(req.params.id);
-    console.log(result);
-    if (userRole !== 'admin' && userId !== (result === null || result === void 0 ? void 0 : result.userId)) {
-        throw new Error('You are not authorized See This Order Details');
+    try {
+        console.log('result', req.params.id);
+        const result = yield order_service_1.OrderService.getDataById(req.params.id);
+        if (userRole === 'admin' ||
+            (userRole === 'customer' && userId === req.params.id)) {
+            (0, sendResponse_1.default)(res, {
+                statusCode: http_status_1.default.OK,
+                success: true,
+                message: 'Order Single data Fatched!!',
+                data: result,
+            });
+        }
+        else {
+            throw new Error('You are not authorized See This Order Details');
+        }
     }
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: 'Order Single data Fatched!!',
-        data: result,
-    });
+    catch (error) {
+        console.error('Error fetching order data:', error);
+        (0, sendResponse_1.default)(res, {
+            statusCode: http_status_1.default.FORBIDDEN,
+            success: false,
+            message: 'Access Denied',
+        });
+    }
 }));
 exports.OrderController = {
-    getAllFromDB,
     getDataById,
     createOrder,
+    getAllOrders,
 };
