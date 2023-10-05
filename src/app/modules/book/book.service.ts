@@ -9,9 +9,7 @@ import { IBookFilterRequest } from './book.interface';
 const insertIntoDB = async (data: Book): Promise<Book> => {
   const result = await prisma.book.create({
     data,
-    include: {
-      category: true,
-    },
+    include: { category: true },
   });
   return result;
 };
@@ -107,18 +105,90 @@ const getDataById = async (id: string): Promise<Book | null> => {
   return result;
 };
 
+// const getDataByCategoryId = async (
+//   categoryId: string
+// ): Promise<Book[] | null> => {
+//   const result = await prisma.book.findMany({
+//     where: {
+//       categoryId, // Add the condition for the category here
+//     },
+//     include: {
+//       category: true,
+//     },
+//   });
+//   return result;
+// };
 const getDataByCategoryId = async (
-  categoryId: string
-): Promise<Book[] | null> => {
+  categoryId: string,
+  filters: IBookFilterRequest,
+  options: IPaginationOptions
+): Promise<IGenericResponse<Book[]>> => {
+  const { searchTerm, ...filterData } = filters;
+  const { page, size, skip } = paginationHelpers.calculatePagination(options);
+
+  const andConditions = [];
+
+  if (searchTerm) {
+    andConditions.push({
+      OR: bookSearchableFields.map(field => ({
+        [field]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    });
+  }
+
+  if (categoryId) {
+    andConditions.push({
+      categoryId: {
+        equals: categoryId,
+      },
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+
+  const whereConditions: Prisma.BookWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
   const result = await prisma.book.findMany({
-    where: {
-      categoryId, // Add the condition for the category here
-    },
+    where: whereConditions,
+    skip,
+    take: size,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            price: 'asc',
+          },
     include: {
       category: true,
     },
   });
-  return result;
+
+  const total = await prisma.book.count();
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    meta: {
+      total,
+      page,
+      size,
+      totalPage,
+    },
+    data: result,
+  };
 };
 
 //update data by Id into DB Route

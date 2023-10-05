@@ -47,10 +47,10 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     }
     //create accessToken & refreshToken
     const { role, id } = isUserExist;
-    const accessToken = jwtHelpers_1.jwtHelpers.createToken({ id, email, role }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
+    const token = jwtHelpers_1.jwtHelpers.createToken({ id, email, role }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
     const refreshToken = jwtHelpers_1.jwtHelpers.createToken({ id, email, role }, config_1.default.jwt.refresh_secret, config_1.default.jwt.refresh_expires_in);
     return {
-        accessToken,
+        token,
         refreshToken,
     };
 });
@@ -77,7 +77,7 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         role: isUserExist.role,
         id: isUserExist.id,
     }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
-    return { accessToken: newAccessToken };
+    return { token: newAccessToken };
 });
 /* function for create access token end */
 exports.AuthService = {

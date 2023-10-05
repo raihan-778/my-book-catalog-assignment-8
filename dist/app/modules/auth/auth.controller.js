@@ -32,6 +32,9 @@ const auth_service_1 = require("./auth.service");
 const signupUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userData = __rest(req.body, []);
     const result = yield auth_service_1.AuthService.signupUser(userData);
+    if (result) {
+        result === null || result === void 0 ? true : delete result.password;
+    }
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -42,7 +45,7 @@ const signupUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const loginData = __rest(req.body, []);
     const result = yield auth_service_1.AuthService.loginUser(loginData);
-    const { refreshToken, accessToken } = result;
+    const { refreshToken, token } = result;
     //set refresh token
     const cookieOptions = {
         secure: config_1.default.env === 'production',
@@ -53,14 +56,14 @@ const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
         statusCode: http_status_1.default.OK,
         success: true,
         message: 'User logged in successfully',
-        accessToken,
+        token,
     });
 }));
 //function for get new token
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.cookies;
     const result = yield auth_service_1.AuthService.refreshToken(refreshToken);
-    const { accessToken } = result;
+    const { token } = result;
     //set refresh token
     const cookeiOptions = {
         secure: config_1.default.env === 'production',
@@ -71,7 +74,7 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         statusCode: http_status_1.default.OK,
         success: true,
         message: 'New access token generated successfully',
-        accessToken,
+        token,
     });
 }));
 exports.AuthController = {

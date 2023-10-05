@@ -23,7 +23,13 @@ const createOrder = async (
         },
       },
       include: {
-        orderedBooks: true,
+        orderedBooks: {
+          select: {
+            bookId: true,
+            quantity: true,
+            orderId: false,
+          },
+        },
       },
     });
 
@@ -80,7 +86,13 @@ const getAllOrders = async (
             createdAt: 'asc',
           },
     include: {
-      orderedBooks: true,
+      orderedBooks: {
+        select: {
+          bookId: true,
+          quantity: true,
+          orderId: false,
+        },
+      },
     },
   });
   const total = await prisma.order.count();
@@ -103,7 +115,13 @@ const getDataById = async (id: string): Promise<Order | null> => {
       id,
     },
     include: {
-      orderedBooks: true,
+      orderedBooks: {
+        select: {
+          bookId: true,
+          quantity: true,
+          orderId: false,
+        },
+      },
     },
   });
   return result;

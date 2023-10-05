@@ -8,7 +8,11 @@ import { CategoryValidation } from './category.validation';
 const router = Router();
 
 // router.post('/', UserController.insertIntoDB);
-router.post('/', auth(ENUM_USER_ROLE.ADMIN), CategoryController.insertIntoDB);
+router.post(
+  '/create-category',
+  auth(ENUM_USER_ROLE.ADMIN),
+  CategoryController.insertIntoDB
+);
 router.get('/', CategoryController.getAllFromDB);
 router.get('/:id', CategoryController.getDataById);
 
