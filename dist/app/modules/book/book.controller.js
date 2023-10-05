@@ -65,12 +65,45 @@ const getDataById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result,
     });
 }));
+// const getDataByCategoryId = catchAsync(async (req: Request, res: Response) => {
+//   try {
+//     const categoryId = req.params.id;
+//     const result = await BookService.getDataByCategoryId(categoryId);
+//     console.log('result', result);
+//     if (result?.length === 0) {
+//       // No books found for the specified category
+//       return sendResponse<Book[]>(res, {
+//         statusCode: httpStatus.NOT_FOUND,
+//         success: false,
+//         message: 'No books found for the specified category',
+//         data: [],
+//       });
+//     }
+//     sendResponse<Book[]>(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: 'Books retrieved successfully',
+//       data: result,
+//     });
+//   } catch (error) {
+//     console.error('Error retrieving books by category:', error);
+//     sendResponse<Book[]>(res, {
+//       statusCode: httpStatus.INTERNAL_SERVER_ERROR,
+//       success: false,
+//       message: 'Internal server error',
+//       data: [],
+//     });
+//   }
+// });
 const getDataByCategoryId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const categoryId = req.params.id;
-        const result = yield book_service_1.BookService.getDataByCategoryId(categoryId);
+        const filters = (0, pick_1.default)(req.query, book_constant_1.bookFilterableFields);
+        const options = (0, pick_1.default)(req.query, pagination_1.paginationFields);
+        const result = yield book_service_1.BookService.getDataByCategoryId(categoryId, filters, options);
         console.log('result', result);
-        if ((result === null || result === void 0 ? void 0 : result.length) === 0) {
+        if (((_a = result === null || result === void 0 ? void 0 : result.data) === null || _a === void 0 ? void 0 : _a.length) === 0) {
             // No books found for the specified category
             return (0, sendResponse_1.default)(res, {
                 statusCode: http_status_1.default.NOT_FOUND,
@@ -83,7 +116,8 @@ const getDataByCategoryId = (0, catchAsync_1.default)((req, res) => __awaiter(vo
             statusCode: http_status_1.default.OK,
             success: true,
             message: 'Books retrieved successfully',
-            data: result,
+            meta: result.meta,
+            data: result.data,
         });
     }
     catch (error) {

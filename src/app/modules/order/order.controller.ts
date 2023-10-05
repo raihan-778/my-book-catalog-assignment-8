@@ -51,6 +51,7 @@ const getAllOrders = catchAsync(async (req: Request, res: Response) => {
 const getDataById = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   const userRole = req.user?.role;
+  console.log(req.user);
 
   try {
     if (

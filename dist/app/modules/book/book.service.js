@@ -30,9 +30,7 @@ const book_constant_1 = require("./book.constant");
 const insertIntoDB = (data) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.book.create({
         data,
-        include: {
-            category: true,
-        },
+        include: { category: true },
     });
     return result;
 });
@@ -114,16 +112,76 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
     });
     return result;
 });
-const getDataByCategoryId = (categoryId) => __awaiter(void 0, void 0, void 0, function* () {
+// const getDataByCategoryId = async (
+//   categoryId: string
+// ): Promise<Book[] | null> => {
+//   const result = await prisma.book.findMany({
+//     where: {
+//       categoryId, // Add the condition for the category here
+//     },
+//     include: {
+//       category: true,
+//     },
+//   });
+//   return result;
+// };
+const getDataByCategoryId = (categoryId, filters, options) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchTerm } = filters, filterData = __rest(filters, ["searchTerm"]);
+    const { page, size, skip } = paginationHelper_1.paginationHelpers.calculatePagination(options);
+    const andConditions = [];
+    if (searchTerm) {
+        andConditions.push({
+            OR: book_constant_1.bookSearchableFields.map(field => ({
+                [field]: {
+                    contains: searchTerm,
+                    mode: 'insensitive',
+                },
+            })),
+        });
+    }
+    if (categoryId) {
+        andConditions.push({
+            categoryId: {
+                equals: categoryId,
+            },
+        });
+    }
+    if (Object.keys(filterData).length > 0) {
+        andConditions.push({
+            AND: Object.keys(filterData).map(key => ({
+                [key]: {
+                    equals: filterData[key],
+                },
+            })),
+        });
+    }
+    const whereConditions = andConditions.length > 0 ? { AND: andConditions } : {};
     const result = yield prisma_1.default.book.findMany({
-        where: {
-            categoryId, // Add the condition for the category here
-        },
+        where: whereConditions,
+        skip,
+        take: size,
+        orderBy: options.sortBy && options.sortOrder
+            ? {
+                [options.sortBy]: options.sortOrder,
+            }
+            : {
+                price: 'asc',
+            },
         include: {
             category: true,
         },
     });
-    return result;
+    const total = yield prisma_1.default.book.count();
+    const totalPage = Math.ceil(total / size);
+    return {
+        meta: {
+            total,
+            page,
+            size,
+            totalPage,
+        },
+        data: result,
+    };
 });
 //update data by Id into DB Route
 const updateIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {

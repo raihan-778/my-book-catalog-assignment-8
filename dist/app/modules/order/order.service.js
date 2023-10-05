@@ -30,7 +30,13 @@ const createOrder = (userId, orderedBooks) => __awaiter(void 0, void 0, void 0, 
                 },
             },
             include: {
-                orderedBooks: true,
+                orderedBooks: {
+                    select: {
+                        bookId: true,
+                        quantity: true,
+                        orderId: false,
+                    },
+                },
             },
         });
         return order;
@@ -75,7 +81,13 @@ userId) => __awaiter(void 0, void 0, void 0, function* () {
                 createdAt: 'asc',
             },
         include: {
-            orderedBooks: true,
+            orderedBooks: {
+                select: {
+                    bookId: true,
+                    quantity: true,
+                    orderId: false,
+                },
+            },
         },
     });
     const total = yield prisma_1.default.order.count();
@@ -96,7 +108,13 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
             id,
         },
         include: {
-            orderedBooks: true,
+            orderedBooks: {
+                select: {
+                    bookId: true,
+                    quantity: true,
+                    orderId: false,
+                },
+            },
         },
     });
     return result;

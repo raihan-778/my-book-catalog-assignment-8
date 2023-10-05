@@ -67,6 +67,9 @@ const getDataById = (id) => __awaiter(void 0, void 0, void 0, function* () {
         where: {
             id,
         },
+        include: {
+            books: true,
+        },
     });
     return result;
 });
@@ -76,9 +79,6 @@ const updateIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function
             id,
         },
         data: payload,
-        include: {
-            books: true,
-        },
     });
     return result;
 });
